@@ -1,11 +1,12 @@
 import importlib
+import time
 import re
 from sys import argv
 from typing import Optional
 
 from SaitamaRobot import (ALLOW_EXCL, CERT_PATH, DONATION_LINK, LOGGER,
                           OWNER_ID, PORT, SUPPORT_CHAT, TOKEN, URL, WEBHOOK,
-                          dispatcher, telethn, updater)
+                          dispatcher, StartTime, telethn, updater)
 # needed to dynamically load modules
 # NOTE: Module order is not guaranteed, specify that in the config file!
 from SaitamaRobot.modules import ALL_MODULES
@@ -20,19 +21,48 @@ from telegram.ext import (CallbackContext, CallbackQueryHandler, CommandHandler,
 from telegram.ext.dispatcher import DispatcherHandlerStop, run_async
 from telegram.utils.helpers import escape_markdown
 
+
+def get_readable_time(seconds: int) -> str:
+    count = 0
+    ping_time = ""
+    time_list = []
+    time_suffix_list = ["s", "m", "h", "days"]
+
+    while count < 4:
+        count += 1
+        if count < 3:
+            remainder, result = divmod(seconds, 60)
+        else:
+            remainder, result = divmod(seconds, 24)
+        if seconds == 0 and remainder == 0:
+            break
+        time_list.append(int(result))
+        seconds = int(remainder)
+
+    for x in range(len(time_list)):
+        time_list[x] = str(time_list[x]) + time_suffix_list[x]
+    if len(time_list) == 4:
+        ping_time += time_list.pop() + ", "
+
+    time_list.reverse()
+    ping_time += ":".join(time_list)
+
+    return ping_time
+
+
 PM_START_TEXT = """
-Hi {}, my name is {}! 
-I am an Anime themed group management bot.
+Hi there, my name is Yuuki Asuna, the sub-leader of the Knights of the Blood guild.
+Nicknamed as The Flash, I'm an Anime themed group management bot.
 You can find my list of available commands with /help.
 
-[Asuna's Repo](github.com/DevilYashR) 
-See [Basic Configuration Checklist](t.me/OnePunchUpdates/29) on how to secure your group.
-The support group chat is at [Asuna Support](t.me/AsunaYuukiRobotSupport).
+[Asuna's Repo](github.com/DevilYashR/AsunaRobot) 
+See [Basic Configuration Checklist](https://t.me/AsunaRobotUpdates/3) on how to secure your group.
+The support group chat is at [AsunaSupport/RCT Progress](t.me/AsunaYuukiRobotSupport).
 """
 
 HELP_STRINGS = """
-Hey there! My name is *{}*.
-I can help admins manage their groups with ease! Have a look at the following for an idea of some of \
+Hey there! My name is Asuna.
+I'm a cute group management robot and help admins manage their groups with ease! Have a look at the following for an idea of some of \
 the things I can help you with.
 
 *Main* commands available:
@@ -53,7 +83,7 @@ And the following:
 SAITAMA_IMG = "https://telegra.ph/AsunaYuuki-09-21"
 
 DONATE_STRING = """Heya, glad to hear you want to donate!
-AsunaBot doesn't require any donations as of now but \
+We, Asuna's devs, don't require any donations as of now but \
 You can donate to the original writer of the Base code, Paul
 There are two ways of supporting him; [PayPal](paypal.me/PaulSonOfLars), or [Monzo](monzo.me/paulnionvestergaardlarsen)."""
 
@@ -128,6 +158,7 @@ def test(update: Update, context: CallbackContext):
 @run_async
 def start(update: Update, context: CallbackContext):
     args = context.args
+    uptime = get_readable_time((time.time() - StartTime))
     if update.effective_chat.type == "private":
         if len(args) >= 1:
             if args[0].lower() == "help":
@@ -161,12 +192,14 @@ def start(update: Update, context: CallbackContext):
                 disable_web_page_preview=True,
                 reply_markup=InlineKeyboardMarkup([[
                     InlineKeyboardButton(
-                        text="Add Saitama to your group",
+                        text="Add Asuna to your group",
                         url="t.me/{}?startgroup=true".format(
                             context.bot.username))
                 ]]))
     else:
-        update.effective_message.reply_text("I am already online!")
+        update.effective_message.reply_text(
+            "I'm online!\n<b>Up since:</b> <code>{}</code>".format(uptime),
+            parse_mode=ParseMode.HTML)
 
 
 # for test purposes
@@ -212,12 +245,8 @@ def help_button(update, context):
     try:
         if mod_match:
             module = mod_match.group(1)
-            text = (
-                "Here is the help for the *{}* module:\n".format(
-                    HELPABLE[module].__mod_name__
-                )
-                + HELPABLE[module].__help__
-            )
+            text = ("Here is the help for the *{}* module:\n".format(
+                HELPABLE[module].__mod_name__) + HELPABLE[module].__help__)
             query.message.edit_text(
                 text=text,
                 parse_mode=ParseMode.MARKDOWN,
@@ -228,8 +257,8 @@ def help_button(update, context):
                 ]]))
 
         elif prev_match:
-                curr_page = int(prev_match.group(1))
-                query.message.edit_text(
+            curr_page = int(prev_match.group(1))
+            query.message.edit_text(
                 text=HELP_STRINGS,
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(
@@ -247,9 +276,9 @@ def help_button(update, context):
             query.message.edit_text(
                 text=HELP_STRINGS,
                 parse_mode=ParseMode.MARKDOWN,
-                reply_markup=InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help")))
-            
-            
+                reply_markup=InlineKeyboardMarkup(
+                    paginate_modules(0, HELPABLE, "help")))
+
         # ensure no spinny white circle
         context.bot.answer_callback_query(query.id)
         # query.message.delete()
