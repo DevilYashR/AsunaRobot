@@ -31,17 +31,17 @@ def check_user_id(user_id: int, context: CallbackContext) -> Optional[str]:
     return reply
 
 
-#I added extra new lines
-disasters = """ Saitama has bot access levels we call as *"Disaster Levels"*
-\n*Heroes Association* - Devs who can access the bots server and can execute, edit, modify bot code. Can also manage other Disasters
+#I added extra lines
+disasters = """ Asuna has bot access levels we call as *"Disaster Levels"*
+\n*Superheroes* - Devs who can access the bots server and can execute, edit, modify bot code. Can also manage other Disasters
 \n*God* - Only one exists, bot owner. 
-Owner has complete bot access, including bot adminship in chats Saitama is at.
-\n*Dragons* - Have super user access, can gban, manage disasters lower than them and are admins in Saitama.
-\n*Demons* - Have access go globally ban users across Saitama.
+Owner has complete bot access, including bot adminship in chats Asuna is at.
+\n*Dragons* - Have super user access, can gban, manage disasters lower than them and are admins in Asuna.
+\n*Demons* - Have access go globally ban users across Asuna.
 \n*Tigers* - Same as wolves but can unban themselves if banned.
 \n*Wolves* - Cannot be banned, muted flood kicked but can be manually banned by admins.
-\n*Disclaimer*: The disaster levels in Saitama are there for troubleshooting, support, banning potential scammers.
-Report abuse or ask us more on these at [Heroes Association](https://t.me/OnePunchSupport).
+\n*Disclaimer*: The disaster levels in Asuna are there for troubleshooting, support, banning potential scammers.
+Report abuse or ask us more on these at [Asuna Support](https://t.me/AsunaYuukiRobotSupport).
 """
 
 
