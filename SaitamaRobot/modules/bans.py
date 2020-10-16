@@ -46,7 +46,7 @@ def ban(update: Update, context: CallbackContext) -> str:
             raise
 
     if user_id == bot.id:
-        message.reply_text("Oh yeah, ban myself, noob!")
+        message.reply_text("Don't ban me Senpai ><")
         return log_message
 
     if is_user_ban_protected(chat, user_id, member) and user not in DEV_USERS:
@@ -63,12 +63,12 @@ def ban(update: Update, context: CallbackContext) -> str:
             return log_message
         elif user_id in SUPPORT_USERS:
             message.reply_text(
-                "Bring an order from Heroes association to fight a Demon disaster."
+                "Bring an order from Asuna Support to fight a Demon disaster."
             )
             return log_message
         elif user_id in TIGER_USERS:
             message.reply_text(
-                "Bring an order from Heroes association to fight a Tiger disaster."
+                "Bring an order from Asuna Support to fight a Tiger disaster."
             )
             return log_message
         elif user_id in WHITELIST_USERS:
